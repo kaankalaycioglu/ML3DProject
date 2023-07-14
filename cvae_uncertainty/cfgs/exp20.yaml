@@ -3,11 +3,11 @@ ROOT_DIR: './'
 CLASS_NAMES: ['Car']
 
 DATA_CONFIG:
-    DATASET: 'KittiGtDataset'
-    DATA_PATH: './kitti'
+    DATASET: 'PandasetGtDataset'
+    DATA_PATH: './pandaset'
     DATA_SPLIT: {
-        'train': train,
-        'test': val
+        'train': overfit,
+        'test': val,
     }
     # FOLD_IDX: 0
     FORCE_RATIO: 0.0
@@ -20,7 +20,7 @@ DATA_CONFIG:
     ENABLE_SIMILAR_TYPE: True
 
 OPTIMIZATION:
-    BATCH_SIZE_PER_GPU: 64
+    BATCH_SIZE_PER_GPU: 1
     NUM_EPOCHS: 400
 
     OPTIMIZER: adam_onecycle
