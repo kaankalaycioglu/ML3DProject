@@ -1,6 +1,7 @@
 from .pointnet2_backbone import PointNet2Backbone, PointNet2MSG
 from .spconv_backbone import VoxelBackBone8x, VoxelResBackBone8x, VoxelBackBone8xCiassd
 from .spconv_unet import UNetV2
+from .sa_block import SA_block, SA_block_def
 
 __all__ = {
     'VoxelBackBone8x': VoxelBackBone8x,
