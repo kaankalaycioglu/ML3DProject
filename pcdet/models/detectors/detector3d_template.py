@@ -76,6 +76,18 @@ class Detector3DTemplate(nn.Module):
         model_info_dict['num_bev_features'] = decoder_2d_module.num_bev_features
         return decoder_2d_module, model_info_dict
 
+    def build_encoder_2d_module(self, model_info_dict):
+        if self.model_cfg.get('ENCODER_2D', None) is None:
+            return None, model_info_dict
+
+        encoder_2d_module = encoder_2d.__all__[self.model_cfg.ENCODER_2D.NAME](
+            model_cfg=self.model_cfg.ENCODER_2D,
+            input_channels=model_info_dict['num_bev_features']
+        )
+        model_info_dict['module_list'].append(encoder_2d_module)
+        return encoder_2d_module, model_info_dict
+
+
     def build_vfe(self, model_info_dict):
         if self.model_cfg.get('VFE', None) is None:
             return None, model_info_dict
