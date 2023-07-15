@@ -2,6 +2,7 @@ numpy
 llvmlite
 numba
 tensorboardX
+torch<=1.1.0
 easydict
 pyyaml
 scikit-image
