@@ -5,6 +5,8 @@ import numpy as np
 import torch
 import tqdm
 from torch import nn
+import sys
+sys.path.insert(0, "/workspace/Project")
 from pcdet.models import load_data_to_gpu
 from pcdet.utils import common_utils
 

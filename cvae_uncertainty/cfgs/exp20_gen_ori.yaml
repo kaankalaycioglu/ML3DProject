@@ -3,7 +3,7 @@ ROOT_DIR: './'
 CLASS_NAMES: ['Car']
 
 DATA_CONFIG:
-    DATA_PATH: './kitti'
+    DATA_PATH: './pandaset'
     DATA_SPLIT: {
         'train': train,
         'test': val

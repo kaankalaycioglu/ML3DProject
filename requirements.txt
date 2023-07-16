@@ -1,8 +1,8 @@
 numpy
 llvmlite
 numba
-torch>=1.1
 tensorboardX
+torch>=1.1.0
 easydict
 pyyaml
 scikit-image

@@ -22,8 +22,9 @@ class Detector3DTemplate(nn.Module):
         self.register_buffer('global_step', torch.LongTensor(1).zero_())
 
         self.module_topology = [
-            'vfe', 'backbone_3d', 'map_to_bev_module', 'pfe', 'encoder_2d_module', 'cfe', 'decoder_2d_module',
-            'backbone_2d', 'dense_head',  'point_head', 'roi_head'
+            'vfe', 'backbone_3d', 'map_to_bev_module', 'pfe',
+            'encoder_2d_module', 'cfe', 'decoder_2d_module',
+            'backbone_2d', 'dense_head', 'point_head', 'roi_head'
         ]
 
     @property
@@ -50,17 +51,6 @@ class Detector3DTemplate(nn.Module):
             self.add_module(module_name, module)
         return model_info_dict['module_list']
 
-    def build_encoder_2d_module(self, model_info_dict):
-        if self.model_cfg.get('ENCODER_2D', None) is None:
-            return None, model_info_dict
-
-        encoder_2d_module = encoder_2d.__all__[self.model_cfg.ENCODER_2D.NAME](
-            model_cfg=self.model_cfg.ENCODER_2D,
-            input_channels=model_info_dict['num_bev_features']
-        )
-        model_info_dict['module_list'].append(encoder_2d_module)
-        return encoder_2d_module, model_info_dict
-
     def build_cfe(self, model_info_dict):
         if self.model_cfg.get('CFE', None) is None:
             return None, model_info_dict
@@ -85,6 +75,18 @@ class Detector3DTemplate(nn.Module):
         model_info_dict['module_list'].append(decoder_2d_module)
         model_info_dict['num_bev_features'] = decoder_2d_module.num_bev_features
         return decoder_2d_module, model_info_dict
+
+    def build_encoder_2d_module(self, model_info_dict):
+        if self.model_cfg.get('ENCODER_2D', None) is None:
+            return None, model_info_dict
+
+        encoder_2d_module = encoder_2d.__all__[self.model_cfg.ENCODER_2D.NAME](
+            model_cfg=self.model_cfg.ENCODER_2D,
+            input_channels=model_info_dict['num_bev_features']
+        )
+        model_info_dict['module_list'].append(encoder_2d_module)
+        return encoder_2d_module, model_info_dict
+
 
     def build_vfe(self, model_info_dict):
         if self.model_cfg.get('VFE', None) is None:

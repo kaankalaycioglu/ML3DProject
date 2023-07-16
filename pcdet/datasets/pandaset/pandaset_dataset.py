@@ -4,11 +4,9 @@
 
 import pickle
 import os
-try:
-    import pandas as pd
-    import pandaset as ps
-except:
-    pass 
+import pandas as pd
+import pandaset as ps
+
 import numpy as np
 
 from ..dataset import DatasetTemplate
@@ -365,6 +363,7 @@ class PandasetDataset(DatasetTemplate):
             - the path to the bounding box annotations
         """
         infos = []
+        print(self.sequences)
         for seq in self.sequences:
             s = self.dataset[seq]
             s.load_lidar()
@@ -450,7 +449,7 @@ def create_pandaset_infos(dataset_cfg, class_names, data_path, save_path):
     See PandasetDataset.get_infos for further details.
     """
     dataset = PandasetDataset(dataset_cfg=dataset_cfg, class_names=class_names, root_path=data_path, training=False)
-    for split in ["train", "val", "test"]:
+    for split in ["overfit", "train", "val", "test"]:
         print("---------------- Start to generate {} data infos ---------------".format(split))
         dataset.set_split(split)
         infos = dataset.get_infos()
@@ -461,11 +460,13 @@ def create_pandaset_infos(dataset_cfg, class_names, data_path, save_path):
 
     print('------------Start create groundtruth database for data augmentation-----------')
     dataset = PandasetDataset(dataset_cfg=dataset_cfg, class_names=class_names, root_path=data_path, training=False)
-    dataset.set_split("train")
-    dataset.create_groundtruth_database(
-        os.path.join(save_path, 'pandaset_infos_train.pkl'),
-        split="train"
-    )
+    for split in ["train", "overfit"]:
+        print("---------------- Start to generate {} data infos ---------------".format(split))
+        dataset.set_split(split)
+        dataset.create_groundtruth_database(
+            os.path.join(save_path, 'pandaset_infos_{}.pkl'.format(split)),
+            split=split
+        )
     print('---------------Data preparation Done---------------')
 
 
