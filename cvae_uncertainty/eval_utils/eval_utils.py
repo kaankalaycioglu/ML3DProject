@@ -104,9 +104,11 @@ def eval_one_epoch(cfg, model, dataloader, epoch_id, logger, dist_test=False, sa
             box_pred = model(batch_dict)
         # import pdb;pdb.set_trace()
         box_pred = box_pred.cpu().numpy()
-
+        #print(batch_dict)
+        #break
         single_result = {
             "box_pred": box_pred,
+            "seq_id": batch_dict['seq_id'],
             "frame_id": batch_dict['frame_id'],
             "gt_id": batch_dict['gt_id'],
             "gt_boxes": batch_dict['gt_boxes'].cpu().numpy(),
@@ -142,11 +144,15 @@ def eval_one_epoch(cfg, model, dataloader, epoch_id, logger, dist_test=False, sa
 
     # to dump, key=[frame_id, gt_id, ]
     out_result = {}
+    #print(det_annos)
     index = 0
     for anno in det_annos:
+        #print(anno)
+        seq_ids = anno['seq_id']
         frame_ids = anno['frame_id']
         gt_ids = anno['gt_id']
-
+        #print(len(frame_ids), len(gt_ids), len(seq_ids))
+        #break
         box_pred = anno['box_pred'].tolist()
         gt_boxes = anno['gt_boxes'].tolist()
         # gt_boxes_ori = anno['gt_boxes_ori'].tolist()
@@ -156,7 +162,7 @@ def eval_one_epoch(cfg, model, dataloader, epoch_id, logger, dist_test=False, sa
             trans_angle = anno['trans_angle'].tolist()
 
         for i in range(len(frame_ids)):
-            key = f'{frame_ids[i]}_{gt_ids[i]}'
+            key = f'{seq_ids[i]}_{frame_ids[i]}_{gt_ids[i]}'
             box_pred_single = box_pred[i]
             gt_boxes_single = gt_boxes[i]
 
@@ -177,13 +183,20 @@ def eval_one_epoch(cfg, model, dataloader, epoch_id, logger, dist_test=False, sa
             }
 
             index+=1
-    
+    #print(out_result)
+    #return 1
+    #print('\n##############################THIS IS A GAP#################################')
+    #print('\n##############################THIS IS A GAP#################################')
+    #print('\n##############################THIS IS A GAP#################################')
     dump_file = final_output_dir / 'result.pkl'
     if save_to_file:
         logger.info(f"### save file to {dump_file}")
         with open(dump_file, 'wb') as f:
             pickle.dump(out_result, f)
         # ad hoc
+        #with open(dump_file, 'rb') as f:
+        #    print(pickle.load(f))
+        #return 1
         return {}
 
     # to evaluate

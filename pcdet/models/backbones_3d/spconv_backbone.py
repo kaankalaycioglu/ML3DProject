@@ -104,18 +104,18 @@ class VoxelBackBone8x(nn.Module):
             block(64, 64, 3, norm_fn=norm_fn, stride=2, padding=(0, 1, 1), indice_key='spconv4', conv_type='spconv'),
             block(64, 64, 3, norm_fn=norm_fn, padding=1, indice_key='subm4'),
             block(64, 64, 3, norm_fn=norm_fn, padding=1, indice_key='subm4'),
-        )
+        )  # used to be 64 to 64 channels
 
         last_pad = 0
         last_pad = self.model_cfg.get('last_pad', last_pad)
         self.conv_out = spconv.SparseSequential(
             # [200, 150, 5] -> [200, 150, 2]
-            spconv.SparseConv3d(64, 128, (3, 1, 1), stride=(2, 1, 1), padding=last_pad,
+            spconv.SparseConv3d(64, 256, (3, 1, 1), stride=(2, 1, 1), padding=last_pad,
                                 bias=False, indice_key='spconv_down2'),
-            norm_fn(128),
+            norm_fn(256),
             nn.ReLU(),
         )
-        self.num_point_features = 128
+        self.num_point_features = 256  # used to be 128
         self.backbone_channels = {
             'x_conv1': 16,
             'x_conv2': 32,

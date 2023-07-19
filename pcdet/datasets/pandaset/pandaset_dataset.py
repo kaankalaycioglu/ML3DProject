@@ -397,6 +397,7 @@ class PandasetDataset(DatasetTemplate):
         for k in range(len(infos)):
             print('gt_database sample: %d/%d' % (k + 1, len(infos)))
             info = infos[k]
+            sequence_idx = info['sequence']
             sample_idx = info['frame_idx']
             pose = self._get_pose(info)
             points = self._get_lidar_points(info, pose)
@@ -410,7 +411,7 @@ class PandasetDataset(DatasetTemplate):
 
             for i in range(num_obj):
                 tmp_name = names[i].replace("/", "").replace(" ", "")
-                filename = '%s_%s_%d.bin' % (sample_idx, tmp_name, i)
+                filename = '%s_%s_%s_%d.bin' % (sequence_idx, sample_idx, tmp_name, i)
                 filepath = os.path.join(database_save_path, filename)
                 gt_points = points[point_indices[i] > 0]
                 gt_points[:, :3] -= gt_boxes[i, :3]

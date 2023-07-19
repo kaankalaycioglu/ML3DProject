@@ -101,6 +101,7 @@ class VoxelRCNNKLLabelIoUHead(VoxelRCNNHead):
         roi_boxes3d = forward_ret_dict['rois']
         rcnn_batch_size = gt_boxes3d_ct.view(-1, code_size).shape[0]
         gt_uncertaintys_of_rois = forward_ret_dict['gt_uncertaintys_of_rois'] # [2, 128, 7]
+        #print(forward_ret_dict.keys())
         label_var_log = torch.log(gt_uncertaintys_of_rois + 1e-10)
 
         fg_mask = (reg_valid_mask > 0)
