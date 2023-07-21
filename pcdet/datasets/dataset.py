@@ -122,6 +122,7 @@ class DatasetTemplate(torch_data.Dataset):
         """
         if self.training:
             assert 'gt_boxes' in data_dict, 'gt_boxes should be provided for training'
+            #print("This is the length of gt_names: ", len(data_dict['gt_names']))
             gt_boxes_mask = np.array([n in self.class_names for n in data_dict['gt_names']], dtype=np.bool_)
 
             data_dict = self.data_augmentor.forward(
@@ -131,7 +132,7 @@ class DatasetTemplate(torch_data.Dataset):
                 }
             )
 
-        # assert data_dict["gt_boxes"].shape[0] == data_dict["gt_uncertaintys"].shape[0]
+        #assert data_dict["gt_boxes"].shape[0] == data_dict["gt_uncertaintys"].shape[0]
 
         if data_dict.get('gt_boxes', None) is not None:
             selected = common_utils.keep_arrays_by_name(data_dict['gt_names'], self.class_names)
@@ -148,7 +149,7 @@ class DatasetTemplate(torch_data.Dataset):
             if data_dict.get('gt_boxes2d', None) is not None:
                 data_dict['gt_boxes2d'] = data_dict['gt_boxes2d'][selected]
 
-        # assert data_dict["gt_boxes"].shape[0] == data_dict["gt_uncertaintys"].shape[0]
+        #assert data_dict["gt_boxes"].shape[0] == data_dict["gt_uncertaintys"].shape[0]
 
         if data_dict.get('points', None) is not None:
             data_dict = self.point_feature_encoder.forward(data_dict)

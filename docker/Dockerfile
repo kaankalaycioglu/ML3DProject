@@ -19,7 +19,8 @@ RUN apt-get purge -y cmake && \
     make && \
     make install && \
     cmake --version && \
-    rm -rf /root/temp
+    rm -rf /root/temp 66 \
+    apt-get update && apt-get install -y libxcb-xinerama0 libxcb-render-util0 libxcb-image0 libxcb-icccm4 libxcb-keysyms1 libxcb-randr0 libxcb-xkb1 libxkbcommon-x11-0
 
 # Install python
 RUN ln -sv /usr/bin/python3.7 /usr/bin/python

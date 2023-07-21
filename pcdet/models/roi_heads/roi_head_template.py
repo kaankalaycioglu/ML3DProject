@@ -277,7 +277,7 @@ class RoIHeadTemplate(nn.Module):
         rcnn_loss_cls, cls_tb_dict = self.get_box_cls_layer_loss(self.forward_ret_dict)
         rcnn_loss += rcnn_loss_cls
         tb_dict.update(cls_tb_dict)
-
+        #print(self.forward_ret_dict.keys())
         rcnn_loss_reg, reg_tb_dict = self.get_box_reg_layer_loss(self.forward_ret_dict)
         # print("#### rcnn_loss_cls={}, rcnn_loss_reg={}".format(rcnn_loss_cls, rcnn_loss_reg))
         rcnn_loss += rcnn_loss_reg

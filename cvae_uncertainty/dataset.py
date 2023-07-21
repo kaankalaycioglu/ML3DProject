@@ -134,7 +134,7 @@ class PandasetGtDataset():
                 with open(db_infos_path, 'rb') as f:
                     infos = pickle.load(f)
                     infos_list.append(infos)
-            splits = KFold(n_splits=10, shuffle=True, random_state=42)  # random_state=42
+            splits = KFold(n_splits=5, shuffle=True, random_state=42)  # random_state=42
             fold_idx = self.dataset_cfg.FOLD_IDX
             used_infos = []
             if self.enable_similar_type:
@@ -380,7 +380,9 @@ class PandasetGtDataset():
         # print('info gt_idx = ', info['gt_idx'], type(info['gt_idx']))
 
         data_dict['points'] = points.transpose()
-        data_dict['frame_id'] = info['gt_idx']
+        data_dict['seq_id'] = info['path'].split("/")[1].split("_")[0]
+        data_dict['frame_id'] = info['path'].split("/")[1].split("_")[1]
+        #data_dict['frame_id'] = info['gt_idx']
         data_dict['gt_id'] = info['gt_idx']
 
         if 'box3d_lidar' not in info:
@@ -954,7 +956,7 @@ class WaymoGtDataset():
                 with open(db_infos_path, 'rb') as f:
                     infos = pickle.load(f)
                     infos_list.append(infos)
-            splits=KFold(n_splits=5,shuffle=True,random_state=42) # random_state=42
+            splits=KFold(n_splits=10,shuffle=True,random_state=42) # random_state=42
             fold_idx = self.dataset_cfg.FOLD_IDX
             used_infos = []
             if self.enable_similar_type:

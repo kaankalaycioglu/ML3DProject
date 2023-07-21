@@ -253,6 +253,8 @@ class DataAugmentor(object):
             data_dict['gt_boxes'] = data_dict['gt_boxes'][gt_boxes_mask]
             data_dict['gt_names'] = data_dict['gt_names'][gt_boxes_mask]
             if 'gt_uncertaintys' in data_dict:
+                #print(len(gt_boxes_mask), len(data_dict['gt_uncertaintys']), len(data_dict['gt_names']))
+                #print(f"sequence: {data_dict['sequence']}, frame: {data_dict['frame_idx']}")
                 data_dict['gt_uncertaintys'] = data_dict['gt_uncertaintys'][gt_boxes_mask]
             if 'gt_boxes2d' in data_dict:
                 data_dict['gt_boxes2d'] = data_dict['gt_boxes2d'][gt_boxes_mask]

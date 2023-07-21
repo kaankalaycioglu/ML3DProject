@@ -6,6 +6,7 @@ import pickle
 import os
 import pandas as pd
 import pandaset as ps
+import transforms3d as t3d
 
 import numpy as np
 
@@ -14,6 +15,18 @@ from ...ops.roiaware_pool3d import roiaware_pool3d_utils
 
 import torch
 
+def ego_to_lidar_points(points, lidar_pose):
+    lidar_pose_mat = _heading_position_to_mat(
+        lidar_pose['heading'], lidar_pose['position'])
+    return (lidar_pose_mat[:3, :3] @ points.T +  lidar_pose_mat[:3, [3]]).T
+
+def _heading_position_to_mat(heading, position):
+    quat = np.array([heading["w"], heading["x"], heading["y"], heading["z"]])
+    pos = np.array([position["x"], position["y"], position["z"]])
+    transform_matrix = t3d.affines.compose(np.array(pos),
+                                           t3d.quaternions.quat2mat(quat),
+                                           [1.0, 1.0, 1.0])
+    return transform_matrix
 
 def pose_dict_to_numpy(pose):
     """
@@ -124,13 +137,18 @@ class PandasetDataset(DatasetTemplate):
                       'zrot_world_to_ego': zrot_world_to_ego,
                       'pose': pose_dict_to_numpy(pose)
                      }
+
+        if 'uncertainty' in info:
+            gt_uncertaintys = info['uncertainty']
+            input_dict.update({'gt_uncertaintys': gt_uncertaintys})
         # seq_idx is converted to int because strings can't be passed to
         # the gpu in pytorch
         # zrot_world_to_ego is propagated in order to be able to transform the
         # predicted yaws back to world coordinates
 
         data_dict = self.prepare_data(data_dict=input_dict)
-
+        #print("This is a call")
+        #print(data_dict.keys())
         return data_dict
 
 
@@ -269,7 +287,8 @@ class PandasetDataset(DatasetTemplate):
         """
 
         def generate_single_sample_dataframe(batch_index, box_dict, zrot_world_to_ego, pose):
-            pred_boxes = box_dict["pred_boxes"].cpu().numpy()
+            #print(type(box_dict["pred_boxes"]), type(box_dict["pred_scores"]), type(box_dict["pred_scores"]), type(zrot_world_to_ego), type(pose))
+            pred_boxes = box_dict["pred_boxes"]
             pred_scores = box_dict["pred_scores"].cpu().numpy()
             pred_labels = box_dict["pred_labels"].cpu().numpy()
             zrot = zrot_world_to_ego.cpu().numpy()
@@ -299,13 +318,13 @@ class PandasetDataset(DatasetTemplate):
             world_yaws = ego_yaws - zrot
 
             ego_centers = np.vstack([ego_xs, ego_ys, ego_zs]).T
-            world_centers = ps.geometry.ego_to_lidar_points(ego_centers, pose_dict)
+            world_centers = ego_to_lidar_points(ego_centers, pose_dict)
             world_xs = world_centers[:, 0]
             world_ys = world_centers[:, 1]
             world_zs = world_centers[:, 2]
             # dx, dy, dz remain unchanged as the bbox orientation is handled by
             # the yaw information
-
+            #print(type(world_xs), type(world_ys), type(world_zs), type(ego_dxs), type(ego_dys), type(ego_dzs), type(world_yaws), type(names), type(pred_scores))
             data_dict = {'position.x': world_xs,
                          'position.y': world_ys,
                          'position.z': world_zs,
@@ -397,12 +416,14 @@ class PandasetDataset(DatasetTemplate):
         for k in range(len(infos)):
             print('gt_database sample: %d/%d' % (k + 1, len(infos)))
             info = infos[k]
+            sequence_idx = info['sequence']
             sample_idx = info['frame_idx']
             pose = self._get_pose(info)
             points = self._get_lidar_points(info, pose)
             gt_boxes, names, _ = self._get_annotations(info, pose)
 
             num_obj = gt_boxes.shape[0]
+            assert num_obj == len(names), 'Mismatched number of gt_boxes and names'
 
             point_indices = roiaware_pool3d_utils.points_in_boxes_cpu(
                 torch.from_numpy(points[:, 0:3]), torch.from_numpy(gt_boxes)
@@ -410,7 +431,7 @@ class PandasetDataset(DatasetTemplate):
 
             for i in range(num_obj):
                 tmp_name = names[i].replace("/", "").replace(" ", "")
-                filename = '%s_%s_%d.bin' % (sample_idx, tmp_name, i)
+                filename = '%s_%s_%s_%d.bin' % (sequence_idx, sample_idx, tmp_name, i)
                 filepath = os.path.join(database_save_path, filename)
                 gt_points = points[point_indices[i] > 0]
                 gt_points[:, :3] -= gt_boxes[i, :3]
