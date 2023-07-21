@@ -134,7 +134,7 @@ class PandasetGtDataset():
                 with open(db_infos_path, 'rb') as f:
                     infos = pickle.load(f)
                     infos_list.append(infos)
-            splits = KFold(n_splits=2, shuffle=True, random_state=42)  # random_state=42
+            splits = KFold(n_splits=5, shuffle=True, random_state=42)  # random_state=42
             fold_idx = self.dataset_cfg.FOLD_IDX
             used_infos = []
             if self.enable_similar_type:
@@ -956,7 +956,7 @@ class WaymoGtDataset():
                 with open(db_infos_path, 'rb') as f:
                     infos = pickle.load(f)
                     infos_list.append(infos)
-            splits=KFold(n_splits=5,shuffle=True,random_state=42) # random_state=42
+            splits=KFold(n_splits=10,shuffle=True,random_state=42) # random_state=42
             fold_idx = self.dataset_cfg.FOLD_IDX
             used_infos = []
             if self.enable_similar_type:

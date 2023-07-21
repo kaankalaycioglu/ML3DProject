@@ -68,7 +68,7 @@ def single_fold_data(fold_idx):
 
     # car_info = db_infos['Car']
 
-    splits=KFold(n_splits=2,shuffle=True,random_state=42)  # used to be 10
+    splits=KFold(n_splits=5,shuffle=True,random_state=42)  # used to be 10
     # ad hoc, you should change if you forbid enable_similar_type
     used_infos = db_infos['Car']
     #print(db_infos['Car'][4094])
@@ -142,7 +142,7 @@ variance_l_all = []
 
 result_json = {}
 
-for fold_idx in range(2):
+for fold_idx in range(5):
     key_l, pointnum_l, overlap_l, variance_l = single_fold_data(fold_idx)
     
     for i in range(len(key_l)):
