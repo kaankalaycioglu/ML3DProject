@@ -1,3 +1,15 @@
+# 	Voxel-Aware AttentionNet (VAAN) for 3D Object Detection: Enhancing Voxel R-CNN with ERPN and GLENet
+
+As a basis, we used the GLENet implementation. The ReadMe file is shown below. We have modified it and added the .yaml file to run the full modified network. 
+There were significant struggles to run the code on an NVIDIA 30** GPU. 
+We therefore recommend to use the docker image `djiajun1206/pcdet:python3.7_pytorch1.10` to run the project. 
+Follow the instructions below and train the model with our `GLENet_VR_DSA_ERPN.yaml` file.
+
+<p align="center">
+  <img src="docs/modified_voxelrcnn_pipeline.png" width="857" height="320">
+  
+</p>
+
 # GLENet 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/glenet-boosting-3d-object-detectors-with/3d-object-detection-on-kitti-cars-hard)](https://paperswithcode.com/sota/3d-object-detection-on-kitti-cars-hard?p=glenet-boosting-3d-object-detectors-with) 
 [![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2207.02466)
